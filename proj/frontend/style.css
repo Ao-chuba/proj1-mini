@@ -1,0 +1,205 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0b1020 0%, #111827 45%, #0f172a 100%);
+  color: #e5e7eb;
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 26px 20px 32px;
+}
+
+h1 {
+  margin-bottom: 6px;
+  font-size: 2rem;
+  letter-spacing: 0.3px;
+  color: #f8fafc;
+}
+
+.subtitle {
+  margin-top: 0;
+  color: #94a3b8;
+  font-size: 1rem;
+}
+
+.panel {
+  background: rgba(15, 23, 42, 0.86);
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 12px 26px rgba(2, 6, 23, 0.45);
+  backdrop-filter: blur(3px);
+}
+
+.panel h2 {
+  margin-top: 0;
+  font-size: 1.05rem;
+  color: #93c5fd;
+}
+
+#bin-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 10px;
+  align-items: center;
+}
+
+.checkline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+input, select, button {
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  font-size: 0.92rem;
+}
+
+input, select {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: white;
+  font-weight: 600;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  box-shadow: 0 7px 16px rgba(2, 132, 199, 0.35);
+}
+
+button:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.inline-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.controls .control-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+#route-canvas {
+  width: 100%;
+  border: 1px dashed #334155;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.tooltip {
+  position: absolute;
+  background: #0f172a;
+  color: #fff;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  pointer-events: none;
+  display: none;
+  box-shadow: 0 8px 16px rgba(2, 6, 23, 0.25);
+}
+
+.legend {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.chip {
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: 0.8rem;
+  border: 1px solid #475569;
+  color: #cbd5e1;
+}
+
+.chip.naive {
+  background: #7f1d1d;
+}
+
+.chip.optimized {
+  background: #14532d;
+}
+
+.chip.start {
+  background: #1e3a8a;
+}
+
+.chip.priority {
+  background: #7c2d12;
+}
+
+.hint {
+  margin-top: 10px;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.output-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.output-card {
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 12px;
+  background: linear-gradient(180deg, #0f172a, #111827);
+  box-shadow: 0 6px 16px rgba(2, 6, 23, 0.35);
+}
+
+.output-card h3 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  color: #93c5fd;
+}
+
+.output-empty {
+  color: #94a3b8;
+}
+
+@media (max-width: 900px) {
+  #bin-form, .controls .control-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .output-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Waste Collection Route Optimizer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Campus Waste Collection Route Optimizer</h1>
+    <p class="subtitle">Plan efficient waste-bin pickup routes with graph algorithms.</p>
+
+    <section class="panel">
+      <h2>Add Bin Location</h2>
+      <form id="bin-form">
+        <input type="text" id="bin-id" placeholder="Bin ID (e.g., A)" required />
+        <input type="number" id="bin-x" placeholder="X" required />
+        <input type="number" id="bin-y" placeholder="Y" required />
+        <label class="checkline">
+          <input type="checkbox" id="bin-priority" />
+          Priority Bin (full)
+        </label>
+        <button type="submit">Add Bin</button>
+      </form>
+
+      <div class="inline-actions">
+        <button id="push-nodes-btn">Save Nodes to Backend</button>
+        <button id="random-btn">Generate Random Dataset</button>
+      </div>
+    </section>
+
+    <section class="panel controls">
+      <h2>Route Controls</h2>
+      <div class="control-grid">
+        <label>Start Node
+          <select id="start-node"></select>
+        </label>
+        <label>End Node (Dijkstra optional)
+          <select id="end-node"></select>
+        </label>
+        <label>Method
+          <select id="method">
+            <option value="nearest_neighbor">Greedy Nearest Neighbor</option>
+            <option value="tsp_approx">TSP Approximation</option>
+          </select>
+        </label>
+        <label>Trucks
+          <input type="number" id="trucks" min="1" max="5" value="1" />
+        </label>
+      </div>
+      <div class="inline-actions">
+        <button id="route-btn">Generate Route</button>
+        <button id="compare-btn">Compare Routes</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Visualization</h2>
+      <canvas id="route-canvas" width="900" height="450"></canvas>
+      <div id="canvas-tooltip" class="tooltip"></div>
+      <div class="legend">
+        <span class="chip naive">Naive Route</span>
+        <span class="chip optimized">Optimized Route</span>
+        <span class="chip start">Start Node</span>
+        <span class="chip priority">Priority Bin</span>
+      </div>
+      <p class="hint">Tip: Hover nodes to see coordinates. Click a node to toggle priority.</p>
+    </section>
+
+    <section class="panel output">
+      <h2>Output</h2>
+      <div id="output-box" class="output-grid">
+        <div class="output-empty">No computation yet.</div>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
