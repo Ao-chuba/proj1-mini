@@ -3,80 +3,61 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Campus Waste Collection Route Optimizer</title>
+  <title>Smart Waste Collection</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Campus Waste Collection Route Optimizer</h1>
-    <p class="subtitle">Plan efficient waste-bin pickup routes with graph algorithms.</p>
-
-    <section class="panel">
-      <h2>Add Bin Location</h2>
-      <form id="bin-form">
-        <input type="text" id="bin-id" placeholder="Bin ID (e.g., A)" required />
-        <input type="number" id="bin-x" placeholder="X" required />
-        <input type="number" id="bin-y" placeholder="Y" required />
-        <label class="checkline">
-          <input type="checkbox" id="bin-priority" />
-          Priority Bin (full)
-        </label>
-        <button type="submit">Add Bin</button>
-      </form>
-
-      <div class="inline-actions">
-        <button id="push-nodes-btn">Save Nodes to Backend</button>
-        <button id="random-btn">Generate Random Dataset</button>
-      </div>
-    </section>
-
-    <section class="panel controls">
-      <h2>Route Controls</h2>
-      <div class="control-grid">
-        <label>Start Node
-          <select id="start-node"></select>
-        </label>
-        <label>End Node (Dijkstra optional)
-          <select id="end-node"></select>
-        </label>
-        <label>Method
-          <select id="method">
-            <option value="nearest_neighbor">Greedy Nearest Neighbor</option>
-            <option value="tsp_approx">TSP Approximation</option>
-          </select>
-        </label>
-        <label>Trucks
-          <input type="number" id="trucks" min="1" max="5" value="1" />
-        </label>
-      </div>
-      <div class="inline-actions">
-        <button id="route-btn">Generate Route</button>
-        <button id="compare-btn">Compare Routes</button>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>Visualization</h2>
-      <canvas id="route-canvas" width="900" height="450"></canvas>
-      <div id="canvas-tooltip" class="tooltip"></div>
-      <div class="legend">
-        <span class="chip naive">Naive Route</span>
-        <span class="chip optimized">Optimized Route</span>
-        <span class="chip start">Start Node</span>
-        <span class="chip priority">Priority Bin</span>
-      </div>
-      <p class="hint">Tip: Hover nodes to see coordinates. Click a node to toggle priority.</p>
-    </section>
-
-    <section class="panel output">
-      <h2>Output</h2>
-      <div id="output-box" class="output-grid">
-        <div class="output-empty">No computation yet.</div>
-      </div>
-    </section>
+  <!-- Splash Screen -->
+  <div id="splash-screen" class="splash-screen">
+    <div class="splash-content">
+      <h1 class="splash-title">Smart<span style="font-weight: 300;">Route</span></h1>
+      <p class="splash-subtitle">Waste Collection Network</p>
+      <button id="open-route-btn" class="splash-btn">Open Route</button>
+    </div>
   </div>
 
+  <div id="map"></div>
+  
+  <div class="uber-panel">
+    <h1>Smart Routing</h1>
+    <div class="status-bar" id="status-text">Click on the map to add bins.</div>
+    
+    <div class="controls-section">
+      <div class="form-group">
+        <label>Start (Depot)</label>
+        <select id="start-node"></select>
+      </div>
+      <div class="form-group">
+        <label>End (Optional)</label>
+        <select id="end-node"></select>
+      </div>
+      
+      <div class="form-group">
+        <label>Algorithm</label>
+        <select id="method">
+          <option value="nearest_neighbor">Greedy Nearest Neighbor</option>
+          <option value="tsp_approx">TSP Approximation</option>
+        </select>
+      </div>
+      
+      <div class="checkbox-group">
+        <input type="checkbox" id="priority-mode" />
+        <label for="priority-mode">Next click adds Priority Bin (Full)</label>
+      </div>
+      
+      <div class="actions">
+        <button id="route-btn" class="btn-primary">Calculate Route</button>
+        <button id="clear-btn" class="btn-secondary">Clear Map</button>
+      </div>
+    </div>
+    
+    <div id="output-box" class="output-panel">
+      <!-- Results will appear here -->
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
-
