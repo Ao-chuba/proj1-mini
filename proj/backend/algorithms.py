@@ -13,18 +13,27 @@ NodeId = str
 Coords = Tuple[float, float]
 
 
-def euclidean_distance(a: Coords, b: Coords) -> float:
-    """Return Euclidean distance between two 2D points."""
-    return math.dist(a, b)
+def haversine_distance(a: Coords, b: Coords) -> float:
+    """Return Haversine distance between two lat/lon points in kilometers."""
+    lat1, lon1 = a
+    lat2, lon2 = b
+    R = 6371.0 # Earth radius in km
+
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    
+    a_val = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
+    c = 2 * math.atan2(math.sqrt(a_val), math.sqrt(1 - a_val))
+    return R * c
 
 
 def build_complete_graph(nodes: Dict[NodeId, Coords]) -> nx.Graph:
     """Build a complete weighted graph from node coordinates."""
     graph = nx.Graph()
-    for node_id, (x, y) in nodes.items():
-        graph.add_node(node_id, x=x, y=y, label=node_id)
+    for node_id, (lat, lng) in nodes.items():
+        graph.add_node(node_id, lat=lat, lng=lng, label=node_id)
     for u, v in combinations(nodes.keys(), 2):
-        graph.add_edge(u, v, weight=euclidean_distance(nodes[u], nodes[v]))
+        graph.add_edge(u, v, weight=haversine_distance(nodes[u], nodes[v]))
     return graph
 
 
@@ -33,7 +42,7 @@ def route_distance(route: Sequence[NodeId], nodes: Dict[NodeId, Coords]) -> floa
     if len(route) < 2:
         return 0.0
     return sum(
-        euclidean_distance(nodes[route[i]], nodes[route[i + 1]])
+        haversine_distance(nodes[route[i]], nodes[route[i + 1]])
         for i in range(len(route) - 1)
     )
 
@@ -60,7 +69,7 @@ def nearest_neighbor_route(nodes: Dict[NodeId, Coords], start: NodeId) -> Tuple[
     route = [start]
     current = start
     while unvisited:
-        next_node = min(unvisited, key=lambda n: euclidean_distance(nodes[current], nodes[n]))
+        next_node = min(unvisited, key=lambda n: haversine_distance(nodes[current], nodes[n]))
         route.append(next_node)
         unvisited.remove(next_node)
         current = next_node
@@ -147,21 +156,6 @@ def tsp_approx_route(graph: nx.Graph, start: NodeId) -> Tuple[List[NodeId], floa
     distance = sum(graph[cycle[i]][cycle[i + 1]]["weight"] for i in range(len(cycle) - 1))
     route_no_repeat = cycle[:-1] if cycle and cycle[0] == cycle[-1] else cycle
     return route_no_repeat, float(distance)
-
-
-def multi_truck_split(route: List[NodeId], trucks: int) -> List[List[NodeId]]:
-    """Split route for k trucks using balanced round-robin allocation."""
-    if trucks <= 1 or len(route) <= 1:
-        return [route]
-    chunks: List[List[NodeId]] = [[] for _ in range(trucks)]
-    for idx, node in enumerate(route):
-        chunks[idx % trucks].append(node)
-    return [chunk for chunk in chunks if chunk]
-
-
-def per_truck_distances(routes: List[List[NodeId]], nodes: Dict[NodeId, Coords]) -> List[float]:
-    """Return distance list for each truck route."""
-    return [round(route_distance(r, nodes), 2) for r in routes]
 
 
 def efficiency_improvement(naive_dist: float, optimized_dist: float) -> float:

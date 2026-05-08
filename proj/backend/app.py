@@ -12,10 +12,8 @@ from algorithms import (
     dijkstra_path,
     enforce_priority_window,
     efficiency_improvement,
-    multi_truck_split,
     naive_route,
     nearest_neighbor_route,
-    per_truck_distances,
     route_distance,
     two_opt,
     tsp_approx_route,
@@ -55,7 +53,7 @@ def _parse_nodes(payload) -> CoordinateMap:
 
     for item in nodes:
         node_id = str(item["id"])
-        parsed[node_id] = (float(item["x"]), float(item["y"]))
+        parsed[node_id] = (float(item["lat"]), float(item["lng"]))
     return parsed
 
 
@@ -69,9 +67,6 @@ def _validate_route_request(payload):
     start = str(payload.get("start"))
     if start not in NODE_STORE:
         return f"Start node '{start}' not found."
-    trucks = int(payload.get("trucks", 1))
-    if trucks < 1:
-        return "Trucks must be >= 1."
     return None
 
 
@@ -79,7 +74,6 @@ def _run_optimization(payload):
     start = str(payload.get("start"))
     end = str(payload.get("end")) if payload.get("end") is not None else None
     method = str(payload.get("method", "nearest_neighbor"))
-    trucks = int(payload.get("trucks", 1))
     priority_bins = [str(x) for x in payload.get("priority_bins", []) if str(x) in NODE_STORE]
 
     graph = build_complete_graph(NODE_STORE)
@@ -102,20 +96,14 @@ def _run_optimization(payload):
         optimized_route = _enforce_route_end(optimized_route, start, end)
     optimized_distance = route_distance(optimized_route, NODE_STORE)
 
-    truck_routes = multi_truck_split(optimized_route, trucks)
-    truck_distance_list = per_truck_distances(truck_routes, NODE_STORE)
     improvement = efficiency_improvement(naive_dist, optimized_distance)
 
     # Basic demo metrics (distance-driven estimates).
-    # Assumption: each distance unit ~= 2.2 minutes of collection effort.
-    optimized_time_seconds = optimized_distance * 2.2 * 60.0
-    naive_time_seconds = naive_dist * 2.2 * 60.0
+    # Assumption: each km ~= 5 minutes of collection effort (driving + collecting).
+    optimized_time_seconds = optimized_distance * 5.0 * 60.0
+    naive_time_seconds = naive_dist * 5.0 * 60.0
     time_saved_seconds = max(0.0, naive_time_seconds - optimized_time_seconds)
-    parallel_time_seconds = (
-        max(truck_distance_list) * 2.2 * 60.0 if truck_distance_list else optimized_time_seconds
-    )
-    parallel_gain_seconds = max(0.0, optimized_time_seconds - parallel_time_seconds)
-    fuel_estimate = round(optimized_distance * 0.14, 2)
+    fuel_estimate = round(optimized_distance * 0.5, 2)
 
     return {
         "optimized_route": optimized_route,
@@ -123,14 +111,10 @@ def _run_optimization(payload):
         "total_distance": round(optimized_distance, 2),
         "naive_distance": round(naive_dist, 2),
         "improvement_percent": round(improvement, 2),
-        "truck_routes": truck_routes,
-        "per_truck_distance": truck_distance_list,
         "metrics": {
             "optimized_time_estimate_hhmmss": _seconds_to_hhmmss(optimized_time_seconds),
             "naive_time_estimate_hhmmss": _seconds_to_hhmmss(naive_time_seconds),
             "time_difference_hhmmss": _seconds_to_hhmmss(time_saved_seconds),
-            "parallel_fleet_time_estimate_hhmmss": _seconds_to_hhmmss(parallel_time_seconds),
-            "parallel_time_saved_hhmmss": _seconds_to_hhmmss(parallel_gain_seconds),
             "fuel_estimate": fuel_estimate,
         },
         "method": method,
@@ -149,7 +133,7 @@ def add_nodes():
     Add or replace node data.
     Expected JSON:
     {
-      "nodes": [{"id":"A","x":10,"y":20}, ...]
+      "nodes": [{"id":"A","lat":40.71,"lng":-74.00}, ...]
     }
     """
     global NODE_STORE
@@ -162,7 +146,7 @@ def add_nodes():
             {
                 "message": "Nodes stored successfully.",
                 "node_count": len(NODE_STORE),
-                "nodes": [{"id": k, "x": v[0], "y": v[1]} for k, v in NODE_STORE.items()],
+                "nodes": [{"id": k, "lat": v[0], "lng": v[1]} for k, v in NODE_STORE.items()],
             }
         )
     except (KeyError, TypeError, ValueError) as exc:
@@ -199,8 +183,6 @@ def compute_route():
             {
                 "method": result["method"],
                 "route": result["optimized_route"],
-                "truck_routes": result["truck_routes"],
-                "per_truck_distance": result["per_truck_distance"],
                 "total_distance": result["total_distance"],
                 "priority_bins": result["priority_bins"],
                 "naive_route": result["naive_route"],
