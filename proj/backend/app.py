@@ -122,6 +122,14 @@ def _run_optimization(payload):
     }
 
 
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({
+        "message": "Waste Collection Routing API is running.",
+        "status_endpoint": "/health"
+    })
+
+
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok"})
