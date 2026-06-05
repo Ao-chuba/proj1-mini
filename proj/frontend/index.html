@@ -4,10 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Waste Collection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Navigation HUD -->
+  <div id="nav-hud" class="nav-hud hidden">
+    <div class="nav-icon" id="nav-hud-icon">🧭</div>
+    <div class="nav-details">
+      <p class="nav-instruction" id="nav-hud-instruction">Proceed to route start</p>
+      <p class="nav-subtext" id="nav-hud-subtext">0 meters remaining</p>
+    </div>
+    <div id="nav-hud-spinner" class="nav-spinner" style="display: none;"></div>
+  </div>
+
   <!-- Splash Screen -->
   <div id="splash-screen" class="splash-screen">
     <div class="splash-content">
@@ -20,6 +33,7 @@
   <div id="map"></div>
   
   <div class="uber-panel">
+    <div class="mobile-handle"></div>
     <h1>Smart Routing</h1>
     <div class="status-bar" id="status-text">Click on the map to add bins.</div>
     
@@ -33,14 +47,7 @@
         <select id="end-node"></select>
       </div>
       
-      <div class="form-group">
-        <label>Algorithm</label>
-        <select id="method">
-          <option value="nearest_neighbor">Greedy Nearest Neighbor</option>
-          <option value="tsp_approx">TSP Approximation</option>
-        </select>
-      </div>
-      
+
       <div class="checkbox-group">
         <input type="checkbox" id="priority-mode" />
         <label for="priority-mode">Next click adds Priority Bin (Full)</label>
@@ -49,6 +56,34 @@
       <div class="actions">
         <button id="route-btn" class="btn-primary">Calculate Route</button>
         <button id="clear-btn" class="btn-secondary">Clear Map</button>
+      </div>
+    </div>
+
+    <!-- Navigation Controls (Hidden by default, shown after route is computed) -->
+    <div id="nav-controls" class="controls-section" style="display: none; border-top: 1px solid #e5e7eb; padding-top: 15px; margin-top: 10px;">
+      <label style="color: #2563eb; font-weight: 700;">Navigation & Assistant</label>
+      
+      <div class="checkbox-group">
+        <input type="checkbox" id="voice-toggle" checked />
+        <label for="voice-toggle">Enable Voice Assistant</label>
+      </div>
+      
+      <div class="checkbox-group">
+        <input type="checkbox" id="follow-vehicle" checked />
+        <label for="follow-vehicle">Auto-Center Map on Vehicle</label>
+      </div>
+      
+      <div class="form-group">
+        <label>Mode</label>
+        <select id="nav-mode">
+          <option value="simulation">Route Simulation (Testing)</option>
+          <option value="live">Live Mobile GPS Tracking</option>
+        </select>
+      </div>
+      
+      <div class="actions">
+        <button id="nav-start-btn" class="btn-primary" style="background: #16a34a;">Start Navigation</button>
+        <button id="nav-stop-btn" class="btn-secondary" style="background: #ef4444; color: white; display: none;">Stop</button>
       </div>
     </div>
     

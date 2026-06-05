@@ -1,6 +1,6 @@
 * {
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 body, html {
   margin: 0;
@@ -243,4 +243,128 @@ select:focus, input[type="number"]:focus {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Navigation HUD */
+.nav-hud {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 320px;
+  max-width: 500px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.nav-hud.hidden {
+  opacity: 0;
+  transform: translate(-50%, -20px);
+  pointer-events: none;
+}
+.nav-icon {
+  font-size: 24px;
+}
+.nav-details {
+  flex: 1;
+}
+.nav-instruction {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+.nav-subtext {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 2px 0 0 0;
+}
+.nav-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #16a34a;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Vehicle marker animation container */
+.vehicle-marker-container {
+  transition: transform 0.2s linear;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+.vehicle-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Drag handle (only visible on mobile) */
+.mobile-handle {
+  display: none;
+  width: 50px;
+  height: 5px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  margin: -10px auto 10px auto;
+  cursor: pointer;
+}
+
+/* Responsive design for mobile devices */
+@media (max-width: 768px) {
+  .mobile-handle {
+    display: block;
+  }
+
+  .uber-panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 45vh; /* Starts half-collapsed */
+    height: auto;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
+    padding: 15px 20px 25px 20px;
+    transition: max-height 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .uber-panel.expanded {
+    max-height: 85vh; /* Expands to show all settings */
+  }
+
+  /* Shift zoom controls to avoid bottom sheet overlap */
+  .leaflet-bottom.leaflet-right {
+    bottom: 47vh !important;
+    right: 15px !important;
+    transition: bottom 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .nav-hud {
+    top: 15px;
+    width: calc(100% - 30px);
+    max-width: none;
+    left: 15px;
+    transform: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+  }
+  .nav-hud.hidden {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
 }
